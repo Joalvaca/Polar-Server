@@ -1,11 +1,11 @@
 const FootPrintService = {
   getAllPrints(knex) {
-    return knex.select("*").from("foot_prints");
+    return knex.select("*").from("polar_prints");
   },
   insertPrint(knex, newPrint) {
     return knex
       .insert(newPrint)
-      .into("foot_prints")
+      .into("polar_prints")
       .returning("*")
       .then(row => {
         return row[0];
@@ -13,18 +13,18 @@ const FootPrintService = {
   },
   getbyId(knex, id) {
     return knex
-      .from("foot_prints")
+      .from("polar_prints")
       .select("*")
       .where("id", id)
       .first();
   },
   deletePrint(knex, id) {
-    return knex("foot_prints")
+    return knex("polar_prints")
       .where({ id })
       .delete();
   },
   updatePrint(knex, id, newPrintFields) {
-    return knex("foot_prints")
+    return knex("polar_prints")
       .where({ id })
       .update(newPrintFields);
   }
