@@ -11,7 +11,7 @@ const FootPrintService = {
         return row[0];
       });
   },
-  getbyId(knex, id) {
+  getById(knex, id) {
     return knex
       .from("polar_prints")
       .select("*")

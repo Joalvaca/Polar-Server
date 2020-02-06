@@ -1,9 +1,10 @@
 const express = require("express");
 const FootPrintService = require("./footprint-service");
-const footprintRouter = express.Router();
+const footPrintRouter = express.Router();
+const jsonParser = express.json();
 
-footprintRouter
-  .route("/footprint")
+footPrintRouter
+  .route("/")
   .get((req, res, next) => {
     FootPrintService.getAllPrints(req.app.get("db"))
       .then(prints => {
@@ -20,12 +21,21 @@ footprintRouter
       .then(print => {
         res
           .status(201)
-          .location(`/footprint/${print.id}`)
+          .location(`/${print.id}`)
           .json(print);
       })
       .catch(next);
-  })
+  });
 
+footPrintRouter
+  .route("/:print_id")
+  .get((req, res, next) => {
+    FootPrintService.getById(req.app.get("db"), req.params.print_id)
+      .then(prints => {
+        res.json(prints);
+      })
+      .catch(next);
+  })
   .delete((req, res, next) => {
     FootPrintService.deletePrint(req.app.get("db"), req.params.print_id)
       .then(numRowsAffected => {
@@ -33,7 +43,6 @@ footprintRouter
       })
       .catch(next);
   })
-
   .patch(jsonParser, (req, res, next) => {
     const { name, date_purchased, price_purchase, sell_purchase } = req.body;
     const printToUpdate = {
@@ -54,4 +63,4 @@ footprintRouter
       .catch(next);
   });
 
-module.exports = footprintRouter;
+module.exports = footPrintRouter;
