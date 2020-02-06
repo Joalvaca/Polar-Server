@@ -10,6 +10,7 @@ const app = express();
 
 const morganOption = NODE_ENV === "production" ? "tiny" : "common";
 
+app.use(express.json());
 app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());

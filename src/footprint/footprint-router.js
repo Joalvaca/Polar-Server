@@ -1,7 +1,6 @@
 const express = require("express");
 const FootPrintService = require("./footprint-service");
 const footPrintRouter = express.Router();
-const jsonParser = express.json();
 
 footPrintRouter
   .route("/")
@@ -13,9 +12,22 @@ footPrintRouter
       .catch(next);
   })
 
-  .post(jsonParser, (req, res, next) => {
-    const { name, date_purchased, price_purchase, sell_purchase } = req.body;
-    const newPrint = { name, date_purchased, price_purchase, sell_purchase };
+  .post((req, res, next) => {
+    console.log("~~~~~" + req.body.product_name + "~~~~");
+    const {
+      product_name,
+      date_purchased,
+      date_sold,
+      purchase_price,
+      sold_price
+    } = req.body;
+    const newPrint = {
+      product_name,
+      date_purchased,
+      date_sold,
+      purchase_price,
+      sold_price
+    };
 
     FootPrintService.insertPrint(req.app.get("db"), newPrint)
       .then(print => {
@@ -43,13 +55,20 @@ footPrintRouter
       })
       .catch(next);
   })
-  .patch(jsonParser, (req, res, next) => {
-    const { name, date_purchased, price_purchase, sell_purchase } = req.body;
-    const printToUpdate = {
-      name,
+  .patch((req, res, next) => {
+    const {
+      product_name,
       date_purchased,
-      price_purchase,
-      sell_purchase
+      date_sold,
+      purchase_price,
+      sold_price
+    } = req.body;
+    const printToUpdate = {
+      product_name,
+      date_purchased,
+      date_sold,
+      purchase_price,
+      sold_price
     };
 
     FootPrintService.updatePrint(
