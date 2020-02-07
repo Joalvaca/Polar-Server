@@ -13,7 +13,6 @@ footPrintRouter
   })
 
   .post((req, res, next) => {
-    console.log("~~~~~" + req.body.product_name + "~~~~");
     const {
       product_name,
       date_purchased,
