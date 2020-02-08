@@ -4,7 +4,6 @@ CREATE TABLE polar_users (
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   password TEXT NOT NULL,
-  nickname TEXT,
   date_created TIMESTAMP NOT NULL DEFAULT now
 (),
   date_modified TIMESTAMP

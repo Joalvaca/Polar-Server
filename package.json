@@ -1,5 +1,5 @@
 {
-  "name": "Polar-Server",
+  "name": "express-boilerplate",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -21,8 +21,7 @@
     "helmet": "^3.21.2",
     "knex": "^0.20.8",
     "morgan": "^1.9.1",
-    "pg": "^7.18.1",
-    "xss": "^1.0.6"
+    "pg": "^7.18.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",

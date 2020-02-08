@@ -91,7 +91,7 @@ usersRouter
     if (numberOfValues === 0)
       return res.status(400).json({
         error: {
-          message: `Request body must contain either 'fullname', 'username', 'password' or 'nickname'`
+          message: `Request body must contain either 'user_email','first_name', 'last_name', 'password'`
         }
       });
 
