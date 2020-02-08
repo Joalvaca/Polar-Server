@@ -7,8 +7,8 @@ const usersRouter = express.Router();
 
 const serializeUser = user => ({
   id: user.id,
-  first_name: xss(user.fullname),
-  last_name: xss(user.username),
+  first_name: xss(user.full_name),
+  last_name: xss(user.user_name),
   date_created: user.date_created,
   date_modified: user.date_modified
 });
@@ -50,6 +50,7 @@ usersRouter
 
     UsersService.insertUser(req.app.get("db"), newUser)
       .then(user => {
+        console.log(user);
         res
           .status(201)
           .location(path.posix.join(req.originalUrl, `/${user.id}`))
