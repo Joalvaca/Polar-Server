@@ -7,8 +7,9 @@ const usersRouter = express.Router();
 
 const serializeUser = user => ({
   id: user.id,
-  first_name: xss(user.full_name),
-  last_name: xss(user.user_name),
+  first_name: xss(user.first_name),
+  last_name: xss(user.last_name),
+  user_email: xss(user.user_email),
   date_created: user.date_created,
   date_modified: user.date_modified
 });
@@ -45,16 +46,18 @@ usersRouter
       }
     }
 
-    newUser.user_email = user_email;
     newUser.password = password;
 
+    console.log(newUser.user_email);
     UsersService.insertUser(req.app.get("db"), newUser)
       .then(user => {
         console.log(user);
+        console.log(newUser);
         res
           .status(201)
           .location(path.posix.join(req.originalUrl, `/${user.id}`))
           .json(serializeUser(user));
+        console.log(serializeUser(user));
       })
       .catch(next);
   });
