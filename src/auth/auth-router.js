@@ -12,7 +12,7 @@ authRouter.post("/login", (req, res, next) => {
         error: `Missing '${key}' in request body`
       });
 
-  AuthService.getUserWithUserName(req.app.get("db"), loginUser.user_email)
+  AuthService.getUserWithUserName(req.app.get("db"), loginUser.user_name)
     .then(dbUser => {
       if (!dbUser)
         return res.status(400).json({

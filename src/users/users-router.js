@@ -5,9 +5,9 @@ const UsersService = require("./users-service");
 const usersRouter = express.Router();
 
 usersRouter.post("/", (req, res, next) => {
-  const { password, user_name } = req.body;
+  const { first_name, last_name, password, user_name } = req.body;
 
-  for (const field of ["user_name", "password"])
+  for (const field of ["user_name", "first_name", "last_name", "password"])
     if (!req.body[field])
       return res.status(400).json({
         error: `Missing '${field}' in request body`
@@ -24,6 +24,8 @@ usersRouter.post("/", (req, res, next) => {
 
       return UsersService.hashPassword(password).then(hashedPassword => {
         const newUser = {
+          first_name,
+          last_name,
           user_name,
           password: hashedPassword,
           date_created: "now()"
