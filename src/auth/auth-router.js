@@ -1,10 +1,10 @@
 const express = require("express");
 const AuthService = require("./auth-service");
-const AuthRouter = express.Router();
+const authRouter = express.Router();
 
-AuthRouter.post("/login", (req, res, next) => {
-  const { user_email, password } = req.body;
-  const loginUser = { user_email, password };
+authRouter.post("/login", (req, res, next) => {
+  const { user_name, password } = req.body;
+  const loginUser = { user_name, password };
 
   for (const [key, value] of Object.entries(loginUser))
     if (value == null)
@@ -25,10 +25,10 @@ AuthRouter.post("/login", (req, res, next) => {
       ).then(compareMatch => {
         if (!compareMatch)
           return res.status(400).json({
-            error: "Incorrect user name or password"
+            error: "Incorrect user_name or password"
           });
 
-        const sub = dbUser.user_email;
+        const sub = dbUser.user_name;
         const payload = { user_id: dbUser.id };
         res.send({
           authToken: AuthService.createJwt(sub, payload),
@@ -39,4 +39,4 @@ AuthRouter.post("/login", (req, res, next) => {
     .catch(next);
 });
 
-module.exports = AuthRouter;
+module.exports = authRouter;
