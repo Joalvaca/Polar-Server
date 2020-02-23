@@ -24,6 +24,7 @@ const FootPrintService = {
       .delete();
   },
   updatePrint(knex, id, newPrintFields) {
+    console.log(newPrintFields);
     return knex("polar_prints")
       .where({ id })
       .update(newPrintFields);

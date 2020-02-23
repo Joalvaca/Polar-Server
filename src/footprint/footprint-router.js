@@ -76,7 +76,7 @@ footPrintRouter
       printToUpdate
     )
       .then(numRowsAffected => {
-        res.status(200).end();
+        res.json({ status: true }, 200);
       })
       .catch(next);
   });
