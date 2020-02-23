@@ -50,7 +50,7 @@ footPrintRouter
   .delete((req, res, next) => {
     FootPrintService.deletePrint(req.app.get("db"), req.params.print_id)
       .then(numRowsAffected => {
-        res.status(204).end();
+        res.status(200).end();
       })
       .catch(next);
   })
@@ -76,7 +76,7 @@ footPrintRouter
       printToUpdate
     )
       .then(numRowsAffected => {
-        res.status(204).end();
+        res.status(200).end();
       })
       .catch(next);
   });
