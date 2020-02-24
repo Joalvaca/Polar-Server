@@ -106,7 +106,11 @@ describe("Footprints Endpoints", function() {
     });
 
     const requiredFields = [
-      "product_name,date_purchased,date_sold,purchase_price,sold_price"
+      "product_name",
+      "date_purchased",
+      "date_sold",
+      "purchase_price",
+      "sold_price"
     ];
 
     requiredFields.forEach(field => {
