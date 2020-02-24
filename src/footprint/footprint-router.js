@@ -28,6 +28,14 @@ footPrintRouter
       sold_price
     };
 
+    for (const [key, value] of Object.entries(newPrint)) {
+      if (value == null) {
+        return res.status(400).json({
+          error: { message: `Missing '${key}' in request body` }
+        });
+      }
+    }
+
     FootPrintService.insertPrint(req.app.get("db"), newPrint)
       .then(print => {
         res

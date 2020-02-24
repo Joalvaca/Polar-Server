@@ -49,7 +49,7 @@ describe.only("Footprints Endpoints", function() {
         const printId = 123456;
         return supertest(app)
           .get(`/api/footprints/${printId}`)
-          .expect(200, "");
+          .expect(404, { error: { message: `Footprint doesn't exist` } });
       });
     });
 
@@ -69,8 +69,9 @@ describe.only("Footprints Endpoints", function() {
       });
     });
   });
-  describe.only("POST /footprints", () => {
-    it("creates an footprint, responding with a 201 and a new footprint", function() {
+
+  describe.only(`POST /api/footprints`, () => {
+    it(`creates an footprint, responding with a 201 and a new footprint`, function() {
       this.retries(3);
       const newPrint = {
         product_name: "test",
@@ -96,7 +97,37 @@ describe.only("Footprints Endpoints", function() {
             timeZone: "UTC"
           });
           expect(actual).to.eql(expected);
-        });
+        })
+        .then(res =>
+          supertest(app)
+            .get(`/api/footprint/${res.body.id}`)
+            .expect(res.body)
+        );
+    });
+
+    const requiredFields = [
+      "product_name,date_purchased,purchase_price,date_sold,sold_price"
+    ];
+
+    requiredFields.forEach(field => {
+      const newPrint = {
+        product_name: "test new print",
+        date_purchased: "12/2/21",
+        date_sold: "12/12/21",
+        purchase_price: "12344",
+        sold_price: "12344"
+      };
+
+      it(`responds with 400 and an error message when the '${field}' is missing`, () => {
+        delete newPrint[field];
+
+        return supertest(app)
+          .post("/api/footprints")
+          .send(newPrint)
+          .expect(400, {
+            error: { message: `Missing '${field}' in request body` }
+          });
+      });
     });
   });
 });
