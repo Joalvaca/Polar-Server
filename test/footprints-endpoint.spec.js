@@ -3,7 +3,7 @@ const knex = require("knex");
 const app = require("../src/app");
 const { makeFootprintsArray } = require("./footprints.fixtures");
 
-describe.only("Footprints Endpoints", function() {
+describe("Footprints Endpoints", function() {
   let db;
 
   before("make knex instance", () => {
@@ -46,7 +46,7 @@ describe.only("Footprints Endpoints", function() {
   describe("GET /api/footprints/:print_id", () => {
     context(`Given no footprints`, () => {
       it(`responds with 404`, () => {
-        const printId = 123456;
+        const printId = 1234542342346;
         return supertest(app)
           .get(`/api/footprints/${printId}`)
           .expect(404, { error: { message: `Footprint doesn't exist` } });
@@ -70,7 +70,7 @@ describe.only("Footprints Endpoints", function() {
     });
   });
 
-  describe.only(`POST /api/footprints`, () => {
+  describe(`POST /api/footprints`, () => {
     it(`creates an footprint, responding with a 201 and a new footprint`, function() {
       this.retries(3);
       const newPrint = {
@@ -106,7 +106,7 @@ describe.only("Footprints Endpoints", function() {
     });
 
     const requiredFields = [
-      "product_name,date_purchased,purchase_price,date_sold,sold_price"
+      "product_name,date_purchased,date_sold,purchase_price,sold_price"
     ];
 
     requiredFields.forEach(field => {
