@@ -51,6 +51,11 @@ footPrintRouter
   .get((req, res, next) => {
     FootPrintService.getById(req.app.get("db"), req.params.print_id)
       .then(prints => {
+        if (!prints) {
+          return res.status(404).json({
+            error: { message: `Footprint doesn't exist` }
+          });
+        }
         res.json(prints);
       })
       .catch(next);

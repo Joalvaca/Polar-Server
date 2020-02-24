@@ -43,7 +43,7 @@ describe("Footprints Endpoints", function() {
     });
   });
 
-  describe("GET /api/footprints/:print_id", () => {
+  describe("GET /api/fooprints/:print_id", () => {
     context(`Given no footprints`, () => {
       it(`responds with 404`, () => {
         const printId = 125455;
