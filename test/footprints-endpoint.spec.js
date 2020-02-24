@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const knex = require("knex");
 const app = require("../src/app");
+const { makeFootprintsArray } = require("./footprints.fixtures");
 
 describe.only("Footprints Endpoints", function() {
   let db;
@@ -19,58 +20,83 @@ describe.only("Footprints Endpoints", function() {
 
   afterEach("cleanup", () => db("polar_prints").truncate());
 
-  context("Given there are prints in the database", () => {
-    const testPrints = [
-      {
-        id: 1,
-        product_name: "first test product",
-        date_purchased: "12/01/20",
-        date_sold: "12/01/20",
-        purchase_price: "500",
-        sold_price: "500"
-      },
-      {
-        id: 2,
-        product_name: "second test product",
-        date_purchased: "12/01/20",
-        date_sold: "12/01/20",
-        purchase_price: "500",
-        sold_price: "500"
-      },
-      {
-        id: 3,
-        product_name: "third test product",
-        date_purchased: "12/01/20",
-        date_sold: "12/01/20",
-        purchase_price: "500",
-        sold_price: "500"
-      },
-      {
-        id: 4,
-        product_name: "fourth test product",
-        date_purchased: "12/01/20",
-        date_sold: "12/01/20",
-        purchase_price: "500",
-        sold_price: "500"
-      }
-    ];
-
-    beforeEach("insert prints", () => {
-      return db.into("polar_prints").insert(testPrints);
+  describe(`GET /api/footprints`, () => {
+    context(`Given no articles`, () => {
+      it(`responds with 200 and and empty list`, () => {
+        return supertest(app)
+          .get("/api/footprints")
+          .expect(200, []);
+      });
     });
 
-    it("GET /footprints responds with 200 and all of the articles", () => {
-      return supertest(app)
-        .get("/footprints")
-        .expect(200, testPrints);
+    context("Given there are prints in the database", () => {
+      const testPrints = makeFootprintsArray();
+      beforeEach("insert prints", () => {
+        return db.into("polar_prints").insert(testPrints);
+      });
+
+      it("responds with 200 and all of the footprints", () => {
+        return supertest(app)
+          .get("/api/footprints")
+          .expect(200, testPrints);
+      });
+    });
+  });
+
+  describe("GET /api/footprints/:print_id", () => {
+    context(`Given no footprints`, () => {
+      it(`responds with 404`, () => {
+        const printId = 123456;
+        return supertest(app)
+          .get(`/api/footprints/${printId}`)
+          .expect(200, "");
+      });
     });
 
-    it("GET /fooprints/:print_id responds with 200 and the specified article", () => {
-      const id = 2;
-      const expectedPrint = testPrints[id - 1];
+    context("Given there are footprints in the database", () => {
+      const testPrints = makeFootprintsArray();
+
+      beforeEach("insert prints", () => {
+        return db.into("polar_prints").insert(testPrints);
+      });
+
+      it("responds with 200 and the specified footprint", () => {
+        const printId = 2;
+        const expectedPrint = testPrints[printId - 1];
+        return supertest(app)
+          .get(`/api/footprints/${printId}`)
+          .expect(200, expectedPrint);
+      });
+    });
+  });
+  describe.only("POST /footprints", () => {
+    it("creates an footprint, responding with a 201 and a new footprint", function() {
+      this.retries(3);
+      const newPrint = {
+        product_name: "test",
+        date_purchased: "12/2/20",
+        date_sold: "12/12/20",
+        purchase_price: "123",
+        sold_price: "123"
+      };
       return supertest(app)
-        .get(`/footprints/${id}`)
-        .expect(200, expectedPrint);
+        .post("/api/footprints")
+        .send(newPrint)
+        .expect(201)
+        .expect(res => {
+          expect(res.body.product_name).to.eql(newPrint.product_name);
+          expect(res.body.date_purchased).to.eql(newPrint.date_purchased);
+          expect(res.body.purchase_price).to.eql(newPrint.purchase_price);
+          expect(res.body.date_sold).to.eql(newPrint.date_sold);
+          expect(res.body.sold_price).to.eql(newPrint.sold_price);
+          expect(res.body).to.have.property("id");
+          expect(res.headers.location).to.eql(`/${res.body.id}`);
+          const expected = new Date().toLocaleString("en", { timeZone: "UTC" });
+          const actual = new Date().toLocaleString("en", {
+            timeZone: "UTC"
+          });
+          expect(actual).to.eql(expected);
+        });
     });
   });
 });
