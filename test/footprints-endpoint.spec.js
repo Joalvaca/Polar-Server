@@ -46,7 +46,7 @@ describe("Footprints Endpoints", function() {
   describe("GET /api/footprints/:print_id", () => {
     context(`Given no footprints`, () => {
       it(`responds with 404`, () => {
-        const printId = 1234542342346;
+        const printId = 125455;
         return supertest(app)
           .get(`/api/footprints/${printId}`)
           .expect(404, { error: { message: `Footprint doesn't exist` } });
