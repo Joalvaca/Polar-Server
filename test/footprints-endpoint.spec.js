@@ -91,7 +91,7 @@ describe("Footprints Endpoints", function() {
           expect(res.body.date_sold).to.eql(newPrint.date_sold);
           expect(res.body.sold_price).to.eql(newPrint.sold_price);
           expect(res.body).to.have.property("id");
-          expect(res.headers.location).to.eql(`/${res.body.id}`);
+          expect(res.headers.location).to.eql(`/api/footprints/${res.body.id}`);
           const expected = new Date().toLocaleString("en", { timeZone: "UTC" });
           const actual = new Date().toLocaleString("en", {
             timeZone: "UTC"
@@ -100,7 +100,7 @@ describe("Footprints Endpoints", function() {
         })
         .then(res =>
           supertest(app)
-            .get(`/api/footprint/${res.body.id}`)
+            .get(`/api/footprints/${res.body.id}`)
             .expect(res.body)
         );
     });
@@ -131,6 +131,123 @@ describe("Footprints Endpoints", function() {
           .expect(400, {
             error: { message: `Missing '${field}' in request body` }
           });
+      });
+    });
+
+    describe(`DELETE /api/footprints/:print_id`, () => {
+      context(`Given no footprints`, () => {
+        it(`responds with 404`, () => {
+          const printId = 12345;
+          return supertest(app)
+            .delete(`/api/footprints/${printId}`)
+            .expect(404, { error: { message: `Footprint doesn't exist` } });
+        });
+      });
+
+      context("Given there are footprints in the database", () => {
+        const testPrints = makeFootprintsArray();
+
+        beforeEach("insert prints", () => {
+          return db.into("polar_prints").insert(testPrints);
+        });
+
+        it("responds with 204 and removes the article", () => {
+          const idToRemove = 2;
+          const expectedPrint = testPrints.filter(
+            print => print.id !== idToRemove
+          );
+
+          return supertest(app)
+            .delete(`/api/footprints/${idToRemove}`)
+            .expect(204)
+            .then(res =>
+              supertest(app)
+                .get(`/api/footprints`)
+                .expect(expectedPrint)
+            );
+        });
+      });
+    });
+
+    describe(`PATCH /api/footprints/:print_id`, () => {
+      context(`Given no footprints`, () => {
+        it(`responds with 404`, () => {
+          const printId = 1234567;
+          return supertest(app)
+            .delete(`/api/footprints/${printId}`)
+            .expect(404, { error: { message: `Footprint doesn't exist` } });
+        });
+      });
+
+      context("Given there are footprints in the database", () => {
+        const testPrints = makeFootprintsArray();
+
+        beforeEach("insert footprints", () => {
+          return db.into("polar_prints").insert(testPrints);
+        });
+
+        it("responds with 204 and updates the footprint", () => {
+          const idToUpdate = 2;
+          const updatePrint = {
+            product_name: "update print",
+            date_purchased: "12/23/20",
+            date_sold: "12/4/20",
+            purchase_price: "123",
+            sold_price: "125"
+          };
+          const expectedPrint = {
+            ...testPrints[idToUpdate - 1],
+            ...updatePrint
+          };
+
+          return supertest(app)
+            .patch(`/api/footprints/${idToUpdate}`)
+            .send(updatePrint)
+            .expect(204)
+            .then(res =>
+              supertest(app)
+                .get(`/api/footprints/${idToUpdate}`)
+                .expect(expectedPrint)
+            );
+        });
+
+        it(`responds with 400 when no required fields supplied`, () => {
+          const idToUpdate = 2;
+          return supertest(app)
+            .patch(`/api/footprints/${idToUpdate}`)
+            .send({ irrelevantField: "foo" })
+            .expect(400, {
+              error: {
+                message: `Request body must contain either 'product name ', 'purchase price', 'sold price','purchase date' or 'sold date'`
+              }
+            });
+        });
+
+        it(`responds with 204 when updating only a subset of fields`, () => {
+          const idToUpdate = 2;
+          const updatePrint = {
+            product_name: "updated product name"
+          };
+
+          const expectedPrint = {
+            ...testPrints[idToUpdate - 1],
+            ...updatePrint
+          };
+
+          return supertest(app)
+            .patch(`/api/footprints/${idToUpdate}`)
+            .send({
+              ...updatePrint,
+              fieldToIgnore: "should not be in GET response"
+            })
+
+            .expect(204)
+            .then(res =>
+              supertest(app)
+                .get(`/api/footprints/${idToUpdate}`)
+                .expect(expectedPrint)
+            );
+        });
       });
     });
   });

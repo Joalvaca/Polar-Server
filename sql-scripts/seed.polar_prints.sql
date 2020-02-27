@@ -11,8 +11,8 @@ BEGIN;
     INSERT INTO polar_users
         (first_name,last_name,user_name, password)
     VALUES
-        ('polar', 'chef', 'polarchef', '$2a$12$lHK6LVpc15/ZROZcKU00QeiD.RyYq5dVlV/9m4kKYbGibkRc5l4Ne');
-    -- password
+        ('polar', 'chef', 'polarchef', '$2a$04$IFO/bVu44RFDxwEt5WQNquL.bYFcSNxEUdFKdYNGZYfHTSrncVv9S');
+    -- Polarchef1!
 
 
 

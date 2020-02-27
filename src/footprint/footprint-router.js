@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const FootPrintService = require("./footprint-service");
 const footPrintRouter = express.Router();
@@ -40,7 +41,8 @@ footPrintRouter
       .then(print => {
         res
           .status(201)
-          .location(`/${print.id}`)
+          // .location(req.originalUrl + `/${print.id}`)
+          .location(path.posix.join(req.originalUrl, `/${print.id}`))
           .json(print);
       })
       .catch(next);
@@ -48,7 +50,7 @@ footPrintRouter
 
 footPrintRouter
   .route("/:print_id")
-  .get((req, res, next) => {
+  .all((req, res, next) => {
     FootPrintService.getById(req.app.get("db"), req.params.print_id)
       .then(prints => {
         if (!prints) {
@@ -56,14 +58,18 @@ footPrintRouter
             error: { message: `Footprint doesn't exist` }
           });
         }
-        res.json(prints);
+        req.prints = prints;
+        next();
       })
       .catch(next);
+  })
+  .get((req, res, next) => {
+    res.json(req.prints);
   })
   .delete((req, res, next) => {
     FootPrintService.deletePrint(req.app.get("db"), req.params.print_id)
       .then(numRowsAffected => {
-        res.json({ status: "deleted" });
+        res.status(204).send();
       })
       .catch(next);
   })
@@ -83,13 +89,22 @@ footPrintRouter
       sold_price
     };
 
+    const numberOfValues = Object.values(printToUpdate).filter(Boolean).length;
+    if (numberOfValues === 0) {
+      return res.status(400).json({
+        error: {
+          message: `Request body must contain either 'product name ', 'purchase price', 'sold price','purchase date' or 'sold date'`
+        }
+      });
+    }
+
     FootPrintService.updatePrint(
       req.app.get("db"),
       req.params.print_id,
       printToUpdate
     )
       .then(numRowsAffected => {
-        res.json({ status: "posted" }, 200);
+        res.send(204);
       })
       .catch(next);
   });
