@@ -19,28 +19,22 @@ describe("Users Endpoints", function() {
   before("make knex instance", () => {
     db = knex({
       client: "pg",
-      connection: process.env.TEST_DATABASE_URL
+      connection: process.env.TEST_DB_URL
     });
     app.set("db", db);
   });
 
   after("disconnect from db", () => db.destroy());
 
-  before("clean the table", () =>
-    db.raw(`TRUNCATE polar_users, polar_prints,RESTART IDENTITY CASCADE`)
-  );
+  before("clean the table", () => helpers.cleanTables(db));
+
+  afterEach("clean the table", () => helpers.cleanTables(db));
 
   beforeEach("insert users", () => helpers.seedUsers(db, testUsers));
 
-  afterEach("clean the table", () =>
-    db.raw(
-      `TRUNCATE bookery_users, bookery_books, bookery_bookshelf RESTART IDENTITY CASCADE`
-    )
-  );
-
   describe(`POST /api/users`, () => {
     context(`Happy path`, () => {
-      it(`responds 201, serialized user, storing bcryped password`, () => {
+      it(`responds 201, storing bcryped password`, () => {
         const newUser = {
           first_name: "tester first_name",
           last_name: "tested last_name",

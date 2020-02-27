@@ -2,6 +2,7 @@ const path = require("path");
 const express = require("express");
 const FootPrintService = require("./footprint-service");
 const footPrintRouter = express.Router();
+const { requireAuth } = require("../middleware/basic-auth");
 
 footPrintRouter
   .route("/")

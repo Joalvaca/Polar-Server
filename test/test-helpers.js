@@ -76,7 +76,6 @@ function seedUsers(db, users) {
     .into("polar_users")
     .insert(preppedUsers)
     .then(() =>
-      // update the auto sequence to stay in sync
       db.raw(`SELECT setval('polar_users_id_seq', ?)`, [
         users[users.length - 1].id
       ])
@@ -85,7 +84,7 @@ function seedUsers(db, users) {
 
 function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
   const token = jwt.sign({ user_id: user.id }, secret, {
-    subject: user.user_email,
+    subject: user.user_name,
     algorithm: "HS256"
   });
   return `Bearer ${token}`;

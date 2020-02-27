@@ -2,8 +2,7 @@ const knex = require("knex");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const app = require("../src/app");
-const { makeUsersArray } = require("./test-helpers");
-const helpers = require("./test-helpers");
+const { makeUsersArray, cleanTables } = require("./test-helpers");
 
 function seedUsers(users) {
   const preppedUsers = users.map(user => ({
@@ -29,20 +28,16 @@ describe("Auth Endpoints", () => {
   before("make knex instance", () => {
     db = knex({
       client: "pg",
-      connection: process.env.TEST_DATABASE_URL
+      connection: process.env.TEST_DB_URL
     });
     app.set("db", db);
   });
 
   after("disconnect from db", () => db.destroy());
 
-  before("clean the table", () =>
-    db.raw(`TRUNCATE polar_users, polar_prints RESTART IDENTITY CASCADE`)
-  );
+  before("clean the table", () => cleanTables(db));
 
-  afterEach("clean the table", () =>
-    db.raw(`TRUNCATE polar_users, polar_prints RESTART IDENTITY CASCADE`)
-  );
+  afterEach("clean the table", () => cleanTables(db));
 
   describe("POST /api/auth/login", () => {
     const preppedUsers = seedUsers(testUsers);
@@ -59,7 +54,7 @@ describe("Auth Endpoints", () => {
         { user_id: testUser.id },
         process.env.JWT_SECRET,
         {
-          subject: testUser.user_email,
+          subject: testUser.user_name,
           algorithm: "HS256"
         }
       );
