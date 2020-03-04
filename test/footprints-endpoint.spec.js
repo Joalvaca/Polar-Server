@@ -2,6 +2,7 @@ const { expect } = require("chai");
 const knex = require("knex");
 const app = require("../src/app");
 const { makeFootprintsArray } = require("./footprints.fixtures");
+const helpers = require("./test-helpers");
 
 describe("Footprints Endpoints", function() {
   let db;
@@ -47,9 +48,12 @@ describe("Footprints Endpoints", function() {
     context(`Given no footprints`, () => {
       it(`responds with 404`, () => {
         const printId = 125455;
-        return supertest(app)
-          .get(`/api/footprints/${printId}`)
-          .expect(404, { error: { message: `Footprint doesn't exist` } });
+        return (
+          supertest(app)
+            .get(`/api/footprints/${printId}`)
+            // .set("Authorization", helpers.makeAuthHeader(testUser[0]))
+            .expect(404, { error: { message: `Footprint doesn't exist` } })
+        );
       });
     });
 
@@ -63,9 +67,12 @@ describe("Footprints Endpoints", function() {
       it("responds with 200 and the specified footprint", () => {
         const printId = 2;
         const expectedPrint = testPrints[printId - 1];
-        return supertest(app)
-          .get(`/api/footprints/${printId}`)
-          .expect(200, expectedPrint);
+        return (
+          supertest(app)
+            .get(`/api/footprints/${printId}`)
+            // .set("Authorization", helpers.makeAuthHeader(testUser[0]))
+            .expect(200, expectedPrint)
+        );
       });
     });
   });

@@ -6,6 +6,7 @@ const { requireAuth } = require("../middleware/basic-auth");
 
 footPrintRouter
   .route("/")
+  // .all(requireAuth)
   .get((req, res, next) => {
     FootPrintService.getAllPrints(req.app.get("db"))
       .then(prints => {
@@ -51,6 +52,7 @@ footPrintRouter
 
 footPrintRouter
   .route("/:print_id")
+  // .all(requireAuth)
   .all((req, res, next) => {
     FootPrintService.getById(req.app.get("db"), req.params.print_id)
       .then(prints => {

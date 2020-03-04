@@ -50,7 +50,7 @@ function makeUsersArray() {
   ];
 }
 
-function makeFixures() {
+function makePrintsFixtures() {
   const testUsers = makeUsersArray();
   const testPrints = makeFootprintsArray();
 
@@ -93,7 +93,7 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
 module.exports = {
   makeFootprintsArray,
   makeUsersArray,
-  makeFixures,
+  makePrintsFixtures,
   cleanTables,
   seedUsers,
   makeAuthHeader
