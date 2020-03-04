@@ -2,7 +2,17 @@ const path = require("path");
 const express = require("express");
 const FootPrintService = require("./footprint-service");
 const footPrintRouter = express.Router();
+const xss = require("xss");
 const { requireAuth } = require("../middleware/basic-auth");
+
+const serializePrints = prints => ({
+  id: prints.id,
+  product_name: prints.product_name,
+  date_purchased: prints.date_purchased,
+  date_sold: prints.date_sold,
+  purchase_price: prints.purchase_price,
+  sold_price: prints.sold_price
+});
 
 footPrintRouter
   .route("/")
@@ -10,7 +20,8 @@ footPrintRouter
   .get((req, res, next) => {
     FootPrintService.getAllPrints(req.app.get("db"))
       .then(prints => {
-        res.json(prints);
+        // res.json(prints)
+        res.json(prints.map(serializePrints));
       })
       .catch(next);
   })
@@ -61,13 +72,15 @@ footPrintRouter
             error: { message: `Footprint doesn't exist` }
           });
         }
+
         req.prints = prints;
         next();
       })
       .catch(next);
   })
   .get((req, res, next) => {
-    res.json(req.prints);
+    // res.json(req.prints);
+    res.json(serializePrints(req.prints));
   })
   .delete((req, res, next) => {
     FootPrintService.deletePrint(req.app.get("db"), req.params.print_id)
