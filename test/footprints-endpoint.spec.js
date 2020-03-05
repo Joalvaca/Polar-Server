@@ -4,6 +4,8 @@ const app = require("../src/app");
 const { makeFootprintsArray } = require("./footprints.fixtures");
 const helpers = require("./test-helpers");
 
+const testUsers = helpers.makeUsersArray();
+
 describe("Footprints Endpoints", function() {
   let db;
 
@@ -17,15 +19,17 @@ describe("Footprints Endpoints", function() {
 
   after("disconnect from db", () => db.destroy());
 
-  before("clean the table", () => db("polar_prints").truncate());
+  before("clean the table", () => helpers.cleanTables(db));
 
-  afterEach("cleanup", () => db("polar_prints").truncate());
+  afterEach("cleanup", () => helpers.cleanTables(db));
+  beforeEach("insert users", () => helpers.seedUsers(db, testUsers));
 
   describe(`GET /api/footprints`, () => {
     context(`Given no articles`, () => {
       it(`responds with 200 and and empty list`, () => {
         return supertest(app)
           .get("/api/footprints")
+          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
           .expect(200, []);
       });
     });
@@ -39,6 +43,7 @@ describe("Footprints Endpoints", function() {
       it("responds with 200 and all of the footprints", () => {
         return supertest(app)
           .get("/api/footprints")
+          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
           .expect(200, testPrints);
       });
     });
@@ -48,12 +53,10 @@ describe("Footprints Endpoints", function() {
     context(`Given no footprints`, () => {
       it(`responds with 404`, () => {
         const printId = 125455;
-        return (
-          supertest(app)
-            .get(`/api/footprints/${printId}`)
-            // .set("Authorization", helpers.makeAuthHeader(testUser[0]))
-            .expect(404, { error: { message: `Footprint doesn't exist` } })
-        );
+        return supertest(app)
+          .get(`/api/footprints/${printId}`)
+          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
+          .expect(404, { error: { message: `Footprint doesn't exist` } });
       });
     });
 
@@ -67,12 +70,10 @@ describe("Footprints Endpoints", function() {
       it("responds with 200 and the specified footprint", () => {
         const printId = 2;
         const expectedPrint = testPrints[printId - 1];
-        return (
-          supertest(app)
-            .get(`/api/footprints/${printId}`)
-            // .set("Authorization", helpers.makeAuthHeader(testUser[0]))
-            .expect(200, expectedPrint)
-        );
+        return supertest(app)
+          .get(`/api/footprints/${printId}`)
+          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
+          .expect(200, expectedPrint);
       });
     });
   });
@@ -89,6 +90,7 @@ describe("Footprints Endpoints", function() {
       };
       return supertest(app)
         .post("/api/footprints")
+        .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
         .send(newPrint)
         .expect(201)
         .expect(res => {
@@ -108,6 +110,7 @@ describe("Footprints Endpoints", function() {
         .then(res =>
           supertest(app)
             .get(`/api/footprints/${res.body.id}`)
+            .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
             .expect(res.body)
         );
     });
@@ -134,6 +137,7 @@ describe("Footprints Endpoints", function() {
 
         return supertest(app)
           .post("/api/footprints")
+          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
           .send(newPrint)
           .expect(400, {
             error: { message: `Missing '${field}' in request body` }
@@ -147,6 +151,7 @@ describe("Footprints Endpoints", function() {
           const printId = 12345;
           return supertest(app)
             .delete(`/api/footprints/${printId}`)
+            .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
             .expect(404, { error: { message: `Footprint doesn't exist` } });
         });
       });
@@ -166,10 +171,12 @@ describe("Footprints Endpoints", function() {
 
           return supertest(app)
             .delete(`/api/footprints/${idToRemove}`)
+            .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
             .expect(204)
             .then(res =>
               supertest(app)
                 .get(`/api/footprints`)
+                .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
                 .expect(expectedPrint)
             );
         });
@@ -182,6 +189,7 @@ describe("Footprints Endpoints", function() {
           const printId = 1234567;
           return supertest(app)
             .delete(`/api/footprints/${printId}`)
+            .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
             .expect(404, { error: { message: `Footprint doesn't exist` } });
         });
       });
@@ -209,11 +217,13 @@ describe("Footprints Endpoints", function() {
 
           return supertest(app)
             .patch(`/api/footprints/${idToUpdate}`)
+            .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
             .send(updatePrint)
             .expect(204)
             .then(res =>
               supertest(app)
                 .get(`/api/footprints/${idToUpdate}`)
+                .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
                 .expect(expectedPrint)
             );
         });
@@ -222,6 +232,7 @@ describe("Footprints Endpoints", function() {
           const idToUpdate = 2;
           return supertest(app)
             .patch(`/api/footprints/${idToUpdate}`)
+            .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
             .send({ irrelevantField: "foo" })
             .expect(400, {
               error: {
@@ -243,6 +254,7 @@ describe("Footprints Endpoints", function() {
 
           return supertest(app)
             .patch(`/api/footprints/${idToUpdate}`)
+            .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
             .send({
               ...updatePrint,
               fieldToIgnore: "should not be in GET response"
@@ -252,6 +264,7 @@ describe("Footprints Endpoints", function() {
             .then(res =>
               supertest(app)
                 .get(`/api/footprints/${idToUpdate}`)
+                .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
                 .expect(expectedPrint)
             );
         });

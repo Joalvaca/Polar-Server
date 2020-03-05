@@ -3,7 +3,7 @@ const express = require("express");
 const FootPrintService = require("./footprint-service");
 const footPrintRouter = express.Router();
 const xss = require("xss");
-const { requireAuth } = require("../middleware/basic-auth");
+const { requireAuth } = require("../middleware/jwt-auth");
 
 const serializePrints = prints => ({
   id: prints.id,
@@ -16,7 +16,7 @@ const serializePrints = prints => ({
 
 footPrintRouter
   .route("/")
-  // .all(requireAuth)
+  .all(requireAuth)
   .get((req, res, next) => {
     FootPrintService.getAllPrints(req.app.get("db"))
       .then(prints => {
@@ -63,7 +63,7 @@ footPrintRouter
 
 footPrintRouter
   .route("/:print_id")
-  // .all(requireAuth)
+  .all(requireAuth)
   .all((req, res, next) => {
     FootPrintService.getById(req.app.get("db"), req.params.print_id)
       .then(prints => {

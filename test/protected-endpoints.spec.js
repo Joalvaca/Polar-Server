@@ -5,7 +5,7 @@ const helpers = require("./test-helpers");
 describe("Protected endpoints", function() {
   let db;
 
-  const { testUsers, testPrints } = helpers.makePrintsFixtures();
+  const testUsers = helpers.makeUsersArray();
 
   before("make knex instance", () => {
     db = knex({
@@ -21,41 +21,18 @@ describe("Protected endpoints", function() {
 
   afterEach("cleanup", () => helpers.cleanTables(db));
 
-  beforeEach("insert articles", () =>
-    helpers.seedPolarTables(db, testUsers, testPrints)
-  );
+  beforeEach("insert articles", () => helpers.seedUsers(db, testUsers));
 
   const protectedEndpoints = [
     {
       name: "GET /api/footprints/:polar_id",
       path: "/api/footprints/1",
       method: supertest(app).get
-    },
-    {
-      name: "GET /api/intro",
-      path: "/api/intro",
-      method: supertest(app).post
-    },
-    {
-      name: "GET /api/comments",
-      path: "/api/comments",
-      method: supertest(app).post
-    },
-    {
-      name: "GET /api/resell",
-      path: "/api/resell",
-      method: supertest(app).post
     }
   ];
 
   protectedEndpoints.forEach(endpoint => {
     describe(endpoint.name, () => {
-      it(`responds 401 'Missing basic token' when no basic token`, () => {
-        return endpoint
-          .method(endpoint.path)
-          .expect(401, { error: `Missing basic token` });
-      });
-
       it(`responds 401 'Unauthorized request' when no credentials in token`, () => {
         const userNoCreds = { user_name: "", password: "" };
         return endpoint
@@ -69,17 +46,6 @@ describe("Protected endpoints", function() {
         return endpoint
           .method(endpoint.path)
           .set("Authorization", helpers.makeAuthHeader(userInvalidCreds))
-          .expect(401, { error: `Unauthorized request` });
-      });
-
-      it(`responds 401 'Unauthorized request' when invalid password`, () => {
-        const userInvalidPass = {
-          user_name: testUsers[0].user_name,
-          password: "wrong"
-        };
-        return endpoint
-          .method(endpoint.path)
-          .set("Authorization", helpers.makeAuthHeader(userInvalidPass))
           .expect(401, { error: `Unauthorized request` });
       });
     });
