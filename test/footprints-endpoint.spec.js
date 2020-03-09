@@ -25,7 +25,7 @@ describe("Footprints Endpoints", function() {
   beforeEach("insert users", () => helpers.seedUsers(db, testUsers));
 
   describe(`GET /api/footprints`, () => {
-    context(`Given no articles`, () => {
+    context(`Given no prints`, () => {
       it(`responds with 200 and and empty list`, () => {
         return supertest(app)
           .get("/api/footprints")
