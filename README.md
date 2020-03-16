@@ -1,26 +1,15 @@
-# Express Boilerplate!
+# Polar Footprints API
 
-This is a boilerplate project used for starting new projects!
+Polar Footprints API controls the interactions between the front end and database.
 
-## Set up
+## Technologies
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+Polar Footprints was built using Node, Express and knex. PostgreSQL was used to built the database.
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+## Client Repo
 
-## Scripts
+<div>https://github.com/Joalvaca/Polar-Footprint.git</div>
 
-Start the application `npm start`
+## Live Site
 
-Start nodemon for the application `npm run dev`
-
-Run the tests `npm test`
-
-## Deploying
-
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.
+<div><img src="src/images/Polarform.jpg" alt="form"><div>
