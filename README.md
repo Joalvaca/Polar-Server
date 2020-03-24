@@ -8,14 +8,13 @@ Polar Footprints was built using Node, Express and knex. PostgreSQL was used to 
 
 ## Client Repo
 
-<div>https://github.com/Joalvaca/Polar-Footprint.git</div>
+[Client Repo Here](https://github.com/Joalvaca/Polar-Footprint.git)
 
 ## Live Site
 
-<div>https://polar-app.now.sh/</div>
-<br></br>
+[Live Site Here](https://polar-app.now.sh/)
 
-<div><img src="src/images/Polarform.jpg" alt="form"><div>
+![Polar Form](https://github.com/Joalvaca/Polar-Server/raw/master/src/images/Polarform.jpg)
 
 # Using this API
 
