@@ -15,17 +15,17 @@ const serializePrints = prints => ({
 });
 
 footPrintRouter
-  .route("/")
-  .all(requireAuth)
+  .route("/") // /api/footprint
+  .all(requireAuth) // requires user to be logged in
   .get((req, res, next) => {
+    // GET - /api/footprints - gets all the prints for a specific user
     FootPrintService.getAllPrints(req.app.get("db"))
       .then(prints => {
-        // res.json(prints)
         res.json(prints.map(serializePrints));
       })
       .catch(next);
   })
-
+  // POST - /api/footprints - posts prints for a specific user
   .post((req, res, next) => {
     const {
       product_name,
@@ -54,7 +54,6 @@ footPrintRouter
       .then(print => {
         res
           .status(201)
-          // .location(req.originalUrl + `/${print.id}`)
           .location(path.posix.join(req.originalUrl, `/${print.id}`))
           .json(print);
       })
@@ -79,9 +78,9 @@ footPrintRouter
       .catch(next);
   })
   .get((req, res, next) => {
-    // res.json(req.prints);
     res.json(serializePrints(req.prints));
   })
+  // Delete - /api/footprints - deletes posted prints
   .delete((req, res, next) => {
     FootPrintService.deletePrint(req.app.get("db"), req.params.print_id)
       .then(numRowsAffected => {
@@ -89,6 +88,7 @@ footPrintRouter
       })
       .catch(next);
   })
+  // PATCH - /api/footprints -
   .patch((req, res, next) => {
     const {
       product_name,

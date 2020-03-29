@@ -3,7 +3,7 @@ const path = require("path");
 const UsersService = require("./users-service");
 
 const usersRouter = express.Router();
-
+// POST - /api/users - used to create a new user as part of registration
 usersRouter.post("/", (req, res, next) => {
   const { first_name, last_name, password, user_name } = req.body;
 
